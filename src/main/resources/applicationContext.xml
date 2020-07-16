@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!-- 扫描web相关的bean -->
+    <context:component-scan base-package="com.sample.ssm"/>
+    <!-- 开启Spring注解模式 -->
+    <context:annotation-config/>
+    <!-- 开启SpringMVC注解模式, 如:RequestMapping等 -->
+    <mvc:annotation-driven/>
+    <!-- mvc资源服务配置: 将WEB-INF/imgs/的图片资源对外暴露的url为 /imgs/*-->
+    <mvc:resources location="WEB-INF/imgs/" mapping="/imgs/**"/>
+    <!-- 加载配置文件 -->
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!--    datasource数据源配置-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+    <!-- 2.配置会话工厂 让spring管理sqlSessionfactory -->
+    <!-- 默认情况下：mybatis是不支持spring的数据源的 -->
+    <!-- 问题：那么我们如何可以让mybatis支持spring的数据源呢？ -->
+    <!-- 答：需要一个整合包 mybatis-spirng.jar
+    SqlSessionFactoryBean:作用就是让Mybatis可以通过Spring的数据源创建会话工厂的-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- 加载数据源，使用上面配置好的数据源 -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 加载Mybatis全局配置文件 -->
+        <!-- classpath : 即项目中WEB-INF下面的classes目录;-->
+        <!-- src路径下的文件在编译后会放到WEB-INF/classes路径下,默认的classpath是在这里。直接放到WEB-INF下的话，是不在classpath下的。-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!-- 别名 -->
+        <property name="typeAliasesPackage" value="com.sample.ssm.model"/>
+        <!-- sql映射文件路径 -->
+        <property name="mapperLocations" value="classpath:com/sample/ssm/mapper/*.xml"/>
+    </bean>
+    <!-- 3.配置扫描器，将映射接口的动态对象创建，并且注入到spring容器里面 -->
+    <!-- 默认情况下：spring是不支持通过接口创建对象！！而Mybatis就是通过接口创建对象的
+         问题：Spring必须要实现类创建可以注入到容器，而Mybatis就是使用接口创建动态对象的。不能兼容Spring的要求。怎么办呢？
+         答：整合包提供了一个映射接口扫描器，用于通过映射接口创建了对象，并且可以创建的对象注入到容器里面
+         -根据表述扫描器必需要的两个条件
+         1.需要会话工厂
+         2.必须要指定映射接口的路径 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.sample.ssm.mapper"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+</beans>

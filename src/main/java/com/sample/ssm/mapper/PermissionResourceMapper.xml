@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http:www//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper为根元素，namespace指定了命名空间-->
+<mapper namespace="com.sample.ssm.mapper.PermissionResourceMapper">
+    <select id="getPermissionResourceByPermissionId" parameterType="int"
+            resultType="com.sample.ssm.model.PermissionResource">
+        SELECT * FROM permission_resource where permission_id = #{permissionId}
+    </select>
+</mapper>

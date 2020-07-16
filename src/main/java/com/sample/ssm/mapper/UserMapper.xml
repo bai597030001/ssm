@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http:www//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper为根元素，namespace指定了命名空间-->
+<mapper namespace="com.sample.ssm.mapper.UserMapper">
+    <select id="getUsers" resultType="com.sample.ssm.model.User">
+        SELECT * FROM user
+    </select>
+    <select id="getUserById" parameterType="long" resultType="com.sample.ssm.model.User">
+        SELECT * FROM user where id = #{id}
+    </select>
+    <select id="getUserByName" parameterType="String" resultType="com.sample.ssm.model.User">
+        SELECT * FROM user where username = #{userName}
+    </select>
+</mapper>

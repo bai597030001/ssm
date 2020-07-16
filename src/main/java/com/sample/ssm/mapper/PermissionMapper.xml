@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http:www//mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper为根元素，namespace指定了命名空间-->
+<mapper namespace="com.sample.ssm.mapper.PermissionMapper">
+    <select id="getPermissions" resultType="com.sample.ssm.model.Permission">
+        SELECT * FROM permission
+    </select>
+</mapper>
