@@ -12,4 +12,7 @@
     <select id="getUserByName" parameterType="String" resultType="com.sample.ssm.model.User">
         SELECT * FROM user where username = #{userName}
     </select>
+    <insert id="addUser" parameterType="com.sample.ssm.model.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user(username, password) VALUES(#{userName}, #{passWord})
+    </insert>
 </mapper>

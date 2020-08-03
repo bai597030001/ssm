@@ -224,8 +224,7 @@
         <!--注册项-->
         <div id="register" class="tab-pane fade">
             <form role="form" id="register_form" class="form-horizontal" enctype="multipart/form-data"
-                  action=
-                  <c:url value="/register"/> method="POST">
+                  action="<c:url value="register"/>" method="POST">
                 <!--用户名-->
                 <div class="form-group">
                     <label for="username" class="col-sm-2 control-label pull-left">&nbsp;

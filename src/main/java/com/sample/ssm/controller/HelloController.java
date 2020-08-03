@@ -4,15 +4,18 @@ import com.sample.ssm.mapper.*;
 import com.sample.ssm.model.Permission;
 import com.sample.ssm.model.Role;
 import com.sample.ssm.model.User;
-import com.sample.ssm.utils.MD5Util;
+import com.sample.ssm.model.UserRole;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
@@ -22,7 +25,7 @@ import java.util.List;
  * @author: baijd-a
  * @create: 2020-07-16 11:09
  **/
-@RestController
+@Controller
 // @CrossOrigin(allowCredentials = "true") // 从Spring4.2版本增加
 public class HelloController {
     // @Autowired
@@ -47,42 +50,50 @@ public class HelloController {
     }
 
     @RequestMapping("/hello")
+    @ResponseBody
     public String getUserInfoModelAndView() {
         return "world";
     }
 
     // @GetMapping("/permission") // Spring4.3中引进
     @RequestMapping("/permission")
+    @ResponseBody
     public String getPermission() {
         return permissionMapper.getPermissions().toString();
     }
 
     @RequestMapping("/permissionResource")
+    @ResponseBody
     public String getPermissionResource() {
         return permissionResourceMapper.getPermissionResourceByPermissionId(1).toString();
     }
 
     @RequestMapping("/resource")
+    @ResponseBody
     public String getResource() {
         return resourceMapper.getResource().toString();
     }
 
     @RequestMapping("/role")
+    @ResponseBody
     public String getRole() {
         return roleMapper.getRoles().toString();
     }
 
     @RequestMapping("/rolePermission")
+    @ResponseBody
     public String getRolePermission() {
         return rolePermissionMapper.getRolePermission().toString();
     }
 
     @RequestMapping("/user")
+    @ResponseBody
     public String getUsers() {
         return userMapper.getUsers().toString();
     }
 
     @RequestMapping("/userRole")
+    @ResponseBody
     public String getUserRole() {
         return userRoleMapper.getUserRole().toString();
     }
@@ -102,12 +113,13 @@ public class HelloController {
     }
 
     @RequestMapping("register")
-    public ModelAndView register(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        System.out.println("register user " + username + " success");
+    public ModelAndView register(@RequestParam("username") String username, @RequestParam("password") String password) {
+        User user = new User();
+        user.setName(username);
+        user.setPassword(password);
+        userMapper.addUser(user);
         ModelAndView register = new ModelAndView();
-        register.setViewName("register");
+        register.setViewName("home");
         return register;
     }
 
@@ -120,27 +132,31 @@ public class HelloController {
         response.setContentType("text/html");
         /**设置响应编码*/
         response.setCharacterEncoding("UTF-8");
-        //获取MD5加密对象
-        //MD5 pwd = new MD5();
-        //获取输入的用户名和密码
+        /**用户登录的时候加载用户的权限并放到Session**/
+        HttpSession session = request.getSession();
         String username = null;
         String password = null;
         try {
             username = request.getParameter("login_username");
             password = request.getParameter("passwd");
-            //TODO 查数据表
-            List<Permission> permissions = permissionMapper.getPermissions();
-            System.out.println(permissions);
+            User user = userMapper.getUserByName(username);
+            if (user == null || !user.getPassword().equals(password)) {
+                System.out.println("user does not exist or password wrong");
+                response.sendRedirect(request.getContextPath());
+                return;
+            }
+            // 1.根据用户名获取用户角色
+            // 2.根据用户角色获取用户权限
+            UserRole userRole = userRoleMapper.getUserRoleByUserId(user.getId());
+            long roleId = userRole.getRoleId();
+            List<Permission> permissions = rolePermissionMapper.getPermissionIdByRoleId(roleId);
+            user.setPermissions(permissions);
+            // 将用户信息添加到session
+            session.setAttribute("user", user);
+            response.sendRedirect(request.getContextPath() + "/home");
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        System.out.println("username : " + username + "; password : " + password);
-        String md5Password = password == null ? "" : MD5Util.md5(password);
-        System.out.println("md5 password : " + md5Password);
-        if (username.equals("admin") && password.equals("admin")) {
-            response.sendRedirect("home");
-        } else {
-            response.sendRedirect("home");
+            response.sendRedirect(request.getContextPath() + "/error");
         }
     }
 

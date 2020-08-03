@@ -9,14 +9,15 @@
        http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/mvc
        http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-    <!-- 扫描web相关的bean -->
-    <context:component-scan base-package="com.sample.ssm"/>
     <!-- 开启Spring注解模式 -->
     <context:annotation-config/>
     <!-- 开启SpringMVC注解模式, 如:RequestMapping等 -->
     <mvc:annotation-driven/>
-    <!-- mvc资源服务配置: 将WEB-INF/imgs/的图片资源对外暴露的url为 /imgs/*-->
-    <mvc:resources location="WEB-INF/imgs/" mapping="/imgs/**"/>
+    <!-- 扫描整个包下除了controller相关的bean -->
+    <context:component-scan base-package="com.sample.ssm">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+        <context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.RestController"/>
+    </context:component-scan>
     <!-- 加载配置文件 -->
     <context:property-placeholder location="classpath:db.properties"/>
     <!--    datasource数据源配置-->

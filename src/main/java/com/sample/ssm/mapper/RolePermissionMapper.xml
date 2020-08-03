@@ -7,6 +7,6 @@
         SELECT * FROM role_permission
     </select>
     <select id="getPermissionIdByRoleId" parameterType="long" resultType="com.sample.ssm.model.RolePermission">
-        SELECT * FROM role where role_id = #{roleId}
+        SELECT * FROM role_permission where role_id = #{roleId}
     </select>
 </mapper>

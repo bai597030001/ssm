@@ -14,5 +14,5 @@ public interface UserRoleMapper {
 
     List<UserRole> getUserRole();
 
-    UserRole getUserRoleByUserId();
+    UserRole getUserRoleByUserId(long id);
 }

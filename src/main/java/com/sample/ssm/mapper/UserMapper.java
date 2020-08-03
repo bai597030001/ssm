@@ -14,7 +14,9 @@ public interface UserMapper {
 
     List<User> getUsers();
 
-    User getUserById();
+    User getUserById(long id);
 
-    User getUserByName();
+    User getUserByName(String userName);
+
+    long addUser(User user);
 }

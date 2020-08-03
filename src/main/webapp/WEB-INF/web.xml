@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1">
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" version="3.1">
     <!-- 配置spring的字符编码过滤器，保证request请求的中文字符不会乱码（注意这个过滤器要放到最前面） -->
     <filter>
         <filter-name>CharacterEncoding</filter-name>
@@ -14,15 +14,15 @@
     </filter>
     <filter-mapping>
         <filter-name>CharacterEncoding</filter-name>
-        <!-- 设置这个字符编码过滤器作用与每一个请求 -->
+        <!-- 设置这个字符编码过滤器作用于每一个请求 -->
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-    <!-- 加载spring容器 -->
+    <!-- ApplicationContext.xml  是spring 全局配置文件，用来控制spring 特性的, 可以加载spring容器 -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath*:applicationContext.xml</param-value>
     </context-param>
-    <!-- 配置Spring的servlet监听器 -->
+    <!-- 配置Spring的servlet监听器：使用applicationContext.xml文件时是需要在web.xml中添加listener的 -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
@@ -34,9 +34,10 @@
     <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-        <!-- 同时加载Spring MVC的配置文件。request经过了前端控制器接下来就根据映射器判断该请求需要走哪个控制器 -->
-        <!-- 如果xml配置文件是以上边配置的servlet-name开头的dispatcher-servlet.xml命名，并且位于/WEB-INF下则不需要配置-->
-        <!--此处文件位于/项目名/src目录下，所以在web.xml中<init-param></init-param>作了配置。-->
+        <!-- 1.同时加载Spring MVC的配置文件。request经过了前端控制器接下来就根据映射器判断该请求需要走哪个控制器 -->
+        <!-- 2.如果xml配置文件是以上边配置的servlet-name开头的dispatcher-servlet.xml命名，并且位于/WEB-INF下则不需要配置-->
+        <!--   此处文件位于/项目名/src目录下，所以在web.xml中<init-param></init-param>作了配置。-->
+        <!-- 3.dispatcher-servlet.xml 是spring mvc里面的，控制器、拦截uri转发view-->
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>

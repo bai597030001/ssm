@@ -14,5 +14,5 @@ public interface RolePermissionMapper {
 
     List<Permission> getRolePermission();
 
-    List<Permission> getPermissionIdByRoleId();
+    List<Permission> getPermissionIdByRoleId(long id);
 }
